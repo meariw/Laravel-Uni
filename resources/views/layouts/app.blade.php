@@ -99,6 +99,7 @@
             <a href="{{ route('home') }}">Главная</a>
             <a href="{{ route('about') }}">О нас</a>
             <a href="{{ route('contacts') }}">Контакты</a>
+            <a href="{{ route('signin') }}">Регистрация</a>
         </nav>
     </header>
 
