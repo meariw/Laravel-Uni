@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ArticleController;
+
+Route::get('/db-articles', [ArticleController::class, 'index'])->name('db.articles');
 
 Route::get('/', [MainController::class, 'index'])->name('home');
 
