@@ -100,7 +100,8 @@
             <a href="{{ route('about') }}">О нас</a>
             <a href="{{ route('contacts') }}">Контакты</a>
             <a href="{{ route('signin') }}">Регистрация</a>
-            <a href="{{ route('db.articles') }}">Новости (БД)</a>
+            <a href="{{ route('articles.index') }}">Новости (БД)</a>
+            <a href="{{ route('articles.create') }}">Добавить статью</a>
         </nav>
     </header>
 

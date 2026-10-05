@@ -5,10 +5,9 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 
-Route::get('/db-articles', [ArticleController::class, 'index'])->name('db.articles');
+Route::resource('articles', ArticleController::class);
 
 Route::get('/', [MainController::class, 'index'])->name('home');
-
 Route::get('/galery/{id}', [MainController::class, 'galery'])->name('galery');
 
 Route::get('/about', function () {
@@ -23,7 +22,6 @@ Route::get('/contacts', function () {
         'worktime'  => 'Пн–Вс: 08:00 – 21:00',
         'instagram' => '@aesthetic.cafe',
     ];
-
     return view('contacts', ['contacts' => $contacts]);
 })->name('contacts');
 
