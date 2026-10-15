@@ -10,13 +10,15 @@
         <p>{{ $article->desc }}</p>
 
         <div class="article-actions">
-            <a href="{{ route('articles.edit', $article->id) }}" class="btn-add">Редактировать</a>
-            <form action="{{ route('articles.destroy', $article->id) }}" method="POST"
-                  onsubmit="return confirm('Удалить статью?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-delete">Удалить</button>
-            </form>
+            @auth
+                <a href="{{ route('articles.edit', $article->id) }}" class="btn-add">Редактировать</a>
+                <form action="{{ route('articles.destroy', $article->id) }}" method="POST"
+                      onsubmit="return confirm('Удалить статью?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-delete">Удалить</button>
+                </form>
+            @endauth
             <a href="{{ route('articles.index') }}" class="back-link">← Назад к списку</a>
         </div>
 
@@ -34,33 +36,41 @@
                         <span class="comment-date">{{ $comment->created_at->format('d.m.Y H:i') }}</span>
                     </div>
                     <p>{{ $comment->text }}</p>
-                    <div class="comment-actions">
-                        <a href="{{ route('comments.edit', $comment->id) }}">Редактировать</a>
-                        <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
-                              onsubmit="return confirm('Удалить комментарий?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-delete-small">Удалить</button>
-                        </form>
-                    </div>
+                    @auth
+                        <div class="comment-actions">
+                            <a href="{{ route('comments.edit', $comment->id) }}">Редактировать</a>
+                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
+                                  onsubmit="return confirm('Удалить комментарий?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-delete-small">Удалить</button>
+                            </form>
+                        </div>
+                    @endauth
                 </div>
             @empty
                 <p>Пока нет комментариев.</p>
             @endforelse
 
-            <h3>Добавить комментарий</h3>
-            <form action="{{ route('articles.comments.store', $article->id) }}" method="POST">
-                @csrf
-                <label>Имя</label>
-                <input type="text" name="author" value="{{ old('author') }}">
-                @error('author') <div class="error">{{ $message }}</div> @enderror
+            @auth
+                <h3>Добавить комментарий</h3>
+                <form action="{{ route('articles.comments.store', $article->id) }}" method="POST">
+                    @csrf
+                    <label>Имя</label>
+                    <input type="text" name="author" value="{{ old('author', auth()->user()->name) }}">
+                    @error('author') <div class="error">{{ $message }}</div> @enderror
 
-                <label>Комментарий</label>
-                <textarea name="text" rows="3">{{ old('text') }}</textarea>
-                @error('text') <div class="error">{{ $message }}</div> @enderror
+                    <label>Комментарий</label>
+                    <textarea name="text" rows="3">{{ old('text') }}</textarea>
+                    @error('text') <div class="error">{{ $message }}</div> @enderror
 
-                <button type="submit" class="btn-add btn-submit">Отправить</button>
-            </form>
+                    <button type="submit" class="btn-add btn-submit">Отправить</button>
+                </form>
+            @endauth
+
+            @guest
+                <p><a href="{{ route('login') }}">Войдите</a>, чтобы оставить комментарий.</p>
+            @endguest
         </div>
     </div>
 @endsection

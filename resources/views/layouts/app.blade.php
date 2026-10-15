@@ -99,9 +99,22 @@
             <a href="{{ route('home') }}">Главная</a>
             <a href="{{ route('about') }}">О нас</a>
             <a href="{{ route('contacts') }}">Контакты</a>
-            <a href="{{ route('signin') }}">Регистрация</a>
             <a href="{{ route('articles.index') }}">Новости (БД)</a>
-            <a href="{{ route('articles.create') }}">Добавить статью</a>
+
+            @auth
+                <a href="{{ route('articles.create') }}">Добавить статью</a>
+                <form action="{{ route('logout') }}" method="POST" style="display:inline">
+                    @csrf
+                    <button type="submit" style="background:none;border:none;color:#fdf6ee;cursor:pointer;font-family:inherit;font-size:16px;margin-left:25px;padding:0">
+                        Выйти ({{ auth()->user()->name }})
+                    </button>
+                </form>
+            @endauth
+
+            @guest
+                <a href="{{ route('register') }}">Регистрация</a>
+                <a href="{{ route('login') }}">Вход</a>
+            @endguest
         </nav>
     </header>
 

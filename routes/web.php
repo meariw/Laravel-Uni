@@ -6,10 +6,20 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
 
-Route::resource('articles.comments', CommentController::class)
-    ->only(['store', 'edit', 'update', 'destroy'])
-    ->shallow();
-Route::resource('articles', ArticleController::class);
+// Только для авторизованных
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::resource('articles', ArticleController::class)
+        ->except(['index', 'show']);
+
+    Route::resource('articles.comments', CommentController::class)
+        ->only(['store', 'edit', 'update', 'destroy'])
+        ->shallow();
+});
+
+// Публично
+Route::resource('articles', ArticleController::class)->only(['index', 'show']);
 
 Route::get('/', [MainController::class, 'index'])->name('home');
 Route::get('/galery/{id}', [MainController::class, 'galery'])->name('galery');
@@ -29,5 +39,11 @@ Route::get('/contacts', function () {
     return view('contacts', ['contacts' => $contacts]);
 })->name('contacts');
 
-Route::get('/signin', [AuthController::class, 'create'])->name('signin');
-Route::post('/signin', [AuthController::class, 'registration'])->name('signin.post');
+// Только для гостей
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'create'])->name('register');
+    Route::post('/register', [AuthController::class, 'registration'])->name('register.post');
+
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
+});

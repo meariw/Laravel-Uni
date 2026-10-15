@@ -66,6 +66,16 @@
         margin: 0;
         padding-left: 18px;
     }
+
+    .success-box {
+        background: #e8f3e6;
+        border: 1px solid #a9d3a3;
+        color: #2f6b2a;
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
 </style>
 @endsection
 
@@ -82,7 +92,7 @@
         </div>
     @endif
 
-    <form class="signin-form" action="{{ route('signin.post') }}" method="POST">
+    <form class="signin-form" action="{{ route('register.post') }}" method="POST">
         @csrf
 
         <div>
