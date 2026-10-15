@@ -4,7 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 
+Route::resource('articles.comments', CommentController::class)
+    ->only(['store', 'edit', 'update', 'destroy'])
+    ->shallow();
 Route::resource('articles', ArticleController::class);
 
 Route::get('/', [MainController::class, 'index'])->name('home');

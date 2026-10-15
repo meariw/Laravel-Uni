@@ -38,9 +38,11 @@ class ArticleController extends Controller
 
     // GET /articles/{article} — просмотр одной
     public function show(Article $article)
-    {
-        return view('articles.show', ['article' => $article]);
-    }
+{
+    $article->load('comments');
+
+    return view('articles.show', ['article' => $article]);
+}
 
     // GET /articles/{article}/edit — форма редактирования
     public function edit(Article $article)

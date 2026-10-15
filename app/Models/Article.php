@@ -10,4 +10,9 @@ class Article extends Model
     use HasFactory;
 
     protected $fillable = ['datePublic', 'title', 'shortDesc', 'desc'];
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->latest();
+    }
 }
