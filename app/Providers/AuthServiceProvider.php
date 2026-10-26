@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\Article;
+use App\Models\Comment;
+use App\Models\User;
+use App\Policies\ArticlePolicy;
+use App\Policies\CommentPolicy;
+use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
+
+class AuthServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        Gate::policy(Article::class, ArticlePolicy::class);
+        Gate::policy(Comment::class, CommentPolicy::class);
+
+        // Проверяется раньше всех политик, модератору разрешено всё
+        Gate::before(function (User $user, string $ability) {
+            if ($user->isModerator()) {
+                return Response::allow('Доступ разрешён: вы модератор.');
+            }
+
+            return null;
+        });
+    }
+}

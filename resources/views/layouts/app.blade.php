@@ -101,8 +101,11 @@
             <a href="{{ route('contacts') }}">Контакты</a>
             <a href="{{ route('articles.index') }}">Новости (БД)</a>
 
+            @can('create', App\Models\Article::class)
+                <a href="{{ route('articles.create') }}">Создать новость</a>
+            @endcan
+
             @auth
-                <a href="{{ route('articles.create') }}">Добавить статью</a>
                 <form action="{{ route('logout') }}" method="POST" style="display:inline">
                     @csrf
                     <button type="submit" style="background:none;border:none;color:#fdf6ee;cursor:pointer;font-family:inherit;font-size:16px;margin-left:25px;padding:0">

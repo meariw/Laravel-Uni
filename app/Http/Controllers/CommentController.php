@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller
 {
     // POST /articles/{article}/comments
     public function store(Request $request, Article $article)
     {
+        Gate::authorize('create', Comment::class);
+
         $validated = $request->validate([
             'author' => 'required|string|max:255',
             'text'   => 'required|string',
@@ -24,12 +27,16 @@ class CommentController extends Controller
     // GET /comments/{comment}/edit
     public function edit(Comment $comment)
     {
+        Gate::authorize('update', $comment);
+
         return view('comments.edit', ['comment' => $comment]);
     }
 
     // PUT /comments/{comment}
     public function update(Request $request, Comment $comment)
     {
+        Gate::authorize('update', $comment);
+
         $validated = $request->validate([
             'author' => 'required|string|max:255',
             'text'   => 'required|string',
@@ -43,6 +50,8 @@ class CommentController extends Controller
     // DELETE /comments/{comment}
     public function destroy(Comment $comment)
     {
+        Gate::authorize('delete', $comment);
+
         $articleId = $comment->article_id;
         $comment->delete();
 

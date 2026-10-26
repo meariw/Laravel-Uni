@@ -10,15 +10,17 @@
         <p>{{ $article->desc }}</p>
 
         <div class="article-actions">
-            @auth
+            @can('update', $article)
                 <a href="{{ route('articles.edit', $article->id) }}" class="btn-add">Редактировать</a>
+            @endcan
+            @can('delete', $article)
                 <form action="{{ route('articles.destroy', $article->id) }}" method="POST"
                       onsubmit="return confirm('Удалить статью?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn-delete">Удалить</button>
                 </form>
-            @endauth
+            @endcan
             <a href="{{ route('articles.index') }}" class="back-link">← Назад к списку</a>
         </div>
 
@@ -36,17 +38,21 @@
                         <span class="comment-date">{{ $comment->created_at->format('d.m.Y H:i') }}</span>
                     </div>
                     <p>{{ $comment->text }}</p>
-                    @auth
+                    @canany(['update', 'delete'], $comment)
                         <div class="comment-actions">
-                            <a href="{{ route('comments.edit', $comment->id) }}">Редактировать</a>
-                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
-                                  onsubmit="return confirm('Удалить комментарий?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete-small">Удалить</button>
-                            </form>
+                            @can('update', $comment)
+                                <a href="{{ route('comments.edit', $comment->id) }}">Редактировать</a>
+                            @endcan
+                            @can('delete', $comment)
+                                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
+                                      onsubmit="return confirm('Удалить комментарий?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-delete-small">Удалить</button>
+                                </form>
+                            @endcan
                         </div>
-                    @endauth
+                    @endcanany
                 </div>
             @empty
                 <p>Пока нет комментариев.</p>
