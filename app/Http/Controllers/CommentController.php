@@ -19,6 +19,8 @@ class CommentController extends Controller
             'text'   => 'required|string',
         ]);
 
+        $validated['user_id'] = $request->user()->id;
+
         $article->comments()->create($validated);
 
         return redirect()->route('articles.show', $article->id)->with('success', 'Комментарий добавлен');

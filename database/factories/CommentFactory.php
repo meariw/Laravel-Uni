@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommentFactory extends Factory
@@ -11,6 +12,7 @@ class CommentFactory extends Factory
     {
         return [
             'article_id' => Article::factory(),
+            'user_id' => User::factory(),
             'author' => fake()->name(),
             'text'   => fake()->paragraph(),
         ];

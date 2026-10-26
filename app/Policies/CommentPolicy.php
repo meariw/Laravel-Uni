@@ -15,11 +15,15 @@ class CommentPolicy
 
     public function update(User $user, Comment $comment): Response
     {
-        return Response::deny('Редактировать комментарии может только модератор.');
+        return $user->id === $comment->user_id
+            ? Response::allow()
+            : Response::deny('Редактировать комментарий может только его автор или модератор.');
     }
 
     public function delete(User $user, Comment $comment): Response
     {
-        return Response::deny('Удалять комментарии может только модератор.');
+        return $user->id === $comment->user_id
+            ? Response::allow()
+            : Response::deny('Удалять комментарий может только его автор или модератор.');
     }
 }
