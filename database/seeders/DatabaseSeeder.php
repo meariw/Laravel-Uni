@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
 
         Role::firstWhere('name', 'moderator')->users()->create([
             'name'     => 'Модератор',
-            'email'    => 'moderator@example.com',
+            'email'    => 'tarinka-777@mail.ru',
             'password' => 'password',
         ]);
 

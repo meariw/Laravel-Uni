@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use App\Mail\NewArticleMail;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class ArticleController extends Controller
 {
@@ -36,7 +39,10 @@ class ArticleController extends Controller
             'desc'       => 'nullable|string',
         ]);
 
-        Article::create($validated);
+        $article = Article::create($validated);
+
+        $moderators = User::whereHas('role', fn ($q) => $q->where('name', 'moderator'))->get();
+        Mail::to($moderators)->send(new NewArticleMail($article));
 
         return redirect()->route('articles.index')->with('success', 'Статья создана');
     }
