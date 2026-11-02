@@ -89,6 +89,7 @@
             font-size: 14px;
         }
     </style>
+    @vite(['resources/js/app.js'])
     @yield('styles')
 </head>
 <body>
@@ -124,6 +125,7 @@
             @endguest
         </nav>
     </header>
+    <div id="app"></div>
 
     <main>
         @yield('content')

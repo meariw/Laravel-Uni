@@ -6,6 +6,7 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Jobs\VeryLongJob;
+use App\Events\NewArticleEvent;
 
 class ArticleController extends Controller
 {
@@ -40,6 +41,7 @@ class ArticleController extends Controller
         $article = Article::create($validated);
 
         VeryLongJob::dispatch($article);
+        NewArticleEvent::dispatch($article);
 
         return redirect()->route('articles.index')->with('success', 'Статья создана');
     }
