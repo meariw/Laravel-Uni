@@ -50,7 +50,7 @@ class ArticleController extends Controller
     // GET /articles/{article} — просмотр одной
     public function show(Article $article)
     {
-        $article->load('comments');
+        $article->load(['comments' => fn ($q) => $q->where('is_approved', true)]);
 
         return view('articles.show', ['article' => $article]);
     }

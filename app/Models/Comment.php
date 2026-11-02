@@ -11,6 +11,8 @@ class Comment extends Model
 
     protected $fillable = ['article_id', 'user_id', 'author', 'text'];
 
+    protected $casts = ['is_approved' => 'boolean'];
+
     public function article()
     {
         return $this->belongsTo(Article::class);

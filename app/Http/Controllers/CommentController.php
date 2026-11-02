@@ -23,7 +23,58 @@ class CommentController extends Controller
 
         $article->comments()->create($validated);
 
-        return redirect()->route('articles.show', $article->id)->with('success', 'Комментарий добавлен');
+        return redirect()->route('articles.show', $article->id)->with('success', 'Комментарий отправлен и ожидает модерации');
+    }
+
+    // GET /comments/moderation
+    public function moderation()
+    {
+        Gate::authorize('moderate', Comment::class);
+
+        $pending = Comment::with('article')
+            ->whereNull('is_approved')
+            ->latest()
+            ->get();
+
+        $rejected = Comment::with('article')
+            ->where('is_approved', false)
+            ->latest()
+            ->get();
+
+        return view('comments.moderation', [
+            'pending'  => $pending,
+            'rejected' => $rejected,
+        ]);
+    }
+
+    // PATCH /comments/{comment}/approve
+    public function approve(Comment $comment)
+    {
+        Gate::authorize('moderate', Comment::class);
+
+        if ($comment->is_approved !== null) {
+            return redirect()->route('comments.moderation');
+        }
+
+        $comment->is_approved = true;
+        $comment->save();
+
+        return redirect()->route('comments.moderation')->with('success', 'Комментарий принят');
+    }
+
+    // PATCH /comments/{comment}/reject
+    public function reject(Comment $comment)
+    {
+        Gate::authorize('moderate', Comment::class);
+
+        if ($comment->is_approved !== null) {
+            return redirect()->route('comments.moderation');
+        }
+
+        $comment->is_approved = false;
+        $comment->save();
+
+        return redirect()->route('comments.moderation')->with('success', 'Комментарий отклонён');
     }
 
     // GET /comments/{comment}/edit

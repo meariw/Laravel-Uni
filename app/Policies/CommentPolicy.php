@@ -26,4 +26,9 @@ class CommentPolicy
             ? Response::allow()
             : Response::deny('Удалять комментарий может только его автор или модератор.');
     }
+
+    public function moderate(User $user): Response
+    {
+        return Response::deny('Модерировать комментарии может только модератор.');
+    }
 }

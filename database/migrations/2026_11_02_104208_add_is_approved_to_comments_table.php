@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        // null = ожидает модерации, true = принят, false = отклонён
+        Schema::table('comments', function (Blueprint $table) {
+            $table->boolean('is_approved')->nullable();
+        });
+
+        // Уже существующие комментарии считаем прошедшими модерацию
+        DB::table('comments')->update(['is_approved' => true]);
+    }
+
+    public function down(): void
+    {
+        Schema::table('comments', function (Blueprint $table) {
+            $table->dropColumn('is_approved');
+        });
+    }
+};

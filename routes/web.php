@@ -13,6 +13,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('articles', ArticleController::class)
         ->except(['index', 'show']);
 
+    Route::get('/comments/moderation', [CommentController::class, 'moderation'])->name('comments.moderation');
+    Route::patch('/comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
+    Route::patch('/comments/{comment}/reject', [CommentController::class, 'reject'])->name('comments.reject');
+
     Route::resource('articles.comments', CommentController::class)
         ->only(['store', 'edit', 'update', 'destroy'])
         ->shallow();

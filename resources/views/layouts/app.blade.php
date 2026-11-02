@@ -105,6 +105,10 @@
                 <a href="{{ route('articles.create') }}">Создать новость</a>
             @endcan
 
+            @can('moderate', App\Models\Comment::class)
+                <a href="{{ route('comments.moderation') }}">Модерация</a>
+            @endcan
+
             @auth
                 <form action="{{ route('logout') }}" method="POST" style="display:inline">
                     @csrf
