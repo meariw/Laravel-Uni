@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
 
 class CommentController extends Controller
 {
@@ -59,6 +60,8 @@ class CommentController extends Controller
         $comment->is_approved = true;
         $comment->save();
 
+        Cache::forget('article_' . $comment->article_id);
+
         return redirect()->route('comments.moderation')->with('success', 'Комментарий принят');
     }
 
@@ -97,6 +100,8 @@ class CommentController extends Controller
 
         $comment->update($validated);
 
+        Cache::forget('article_' . $comment->article_id);
+
         return redirect()->route('articles.show', $comment->article_id)->with('success', 'Комментарий обновлён');
     }
 
@@ -107,6 +112,8 @@ class CommentController extends Controller
 
         $articleId = $comment->article_id;
         $comment->delete();
+
+        Cache::forget('article_' . $articleId);
 
         return redirect()->route('articles.show', $articleId)->with('success', 'Комментарий удалён');
     }

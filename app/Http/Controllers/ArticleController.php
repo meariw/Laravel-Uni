@@ -10,13 +10,18 @@ use App\Events\NewArticleEvent;
 use App\Models\User;
 use App\Notifications\NewArticleNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Cache;
 
 class ArticleController extends Controller
 {
     // GET /articles — список с пагинацией
     public function index()
     {
-        $articles = Article::latest()->paginate(6);
+        $page = request('page', 1);
+
+        $articles = Cache::remember('articles_page_' . $page, 600, function () {
+            return Article::latest()->paginate(6);
+        });
 
         return view('articles.index', ['articles' => $articles]);
     }
@@ -43,6 +48,12 @@ class ArticleController extends Controller
 
         $article = Article::create($validated);
 
+        // сброс кеша главной страницы и всех страниц пагинации
+        $pages = (int) ceil(Article::count() / 6) + 1;
+        for ($i = 1; $i <= $pages; $i++) {
+            Cache::forget('articles_page_' . $i);
+        }
+
         VeryLongJob::dispatch($article);
         NewArticleEvent::dispatch($article);
 
@@ -57,19 +68,22 @@ class ArticleController extends Controller
 
     // GET /articles/{article} — просмотр одной
     public function show(Request $request, Article $article)
-{
-    if ($request->user() && $request->query('notification')) {
-        $request->user()
-            ->unreadNotifications()
-            ->where('id', $request->query('notification'))
-            ->first()
-            ?->markAsRead();
+    {
+        // отметка уведомления вне кеша, иначе она не будет выполняться
+        if ($request->user() && $request->query('notification')) {
+            $request->user()
+                ->unreadNotifications()
+                ->where('id', $request->query('notification'))
+                ->first()
+                ?->markAsRead();
+        }
+
+        $article = Cache::rememberForever('article_' . $article->id, function () use ($article) {
+            return $article->load(['comments' => fn ($q) => $q->where('is_approved', true)]);
+        });
+
+        return view('articles.show', ['article' => $article]);
     }
-
-    $article->load(['comments' => fn ($q) => $q->where('is_approved', true)]);
-
-    return view('articles.show', ['article' => $article]);
-}
 
     // GET /articles/{article}/edit — форма редактирования
     public function edit(Article $article)
@@ -93,6 +107,8 @@ class ArticleController extends Controller
 
         $article->update($validated);
 
+        Cache::flush();
+
         return redirect()->route('articles.show', $article->id)->with('success', 'Статья обновлена');
     }
 
@@ -102,6 +118,8 @@ class ArticleController extends Controller
         Gate::authorize('delete', $article);
 
         $article->delete();
+
+        Cache::flush();
 
         return redirect()->route('articles.index')->with('success', 'Статья удалена');
     }

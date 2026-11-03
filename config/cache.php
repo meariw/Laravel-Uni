@@ -131,6 +131,13 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    'serializable_classes' => [
+        App\Models\Article::class,
+        App\Models\Comment::class,
+        Illuminate\Pagination\LengthAwarePaginator::class,
+        Illuminate\Database\Eloquent\Collection::class,
+        Illuminate\Support\Carbon::class,
+        Carbon\Carbon::class,
+    ],
 
 ];
