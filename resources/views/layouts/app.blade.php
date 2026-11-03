@@ -49,6 +49,46 @@
             color: #e8c39e;
         }
 
+        .notifications {
+            position: relative;
+            display: inline-block;
+            margin-left: 25px;
+        }
+
+        .notifications summary {
+            color: #fdf6ee;
+            cursor: pointer;
+            list-style: none;
+            font-size: 16px;
+        }
+
+        .notifications summary::-webkit-details-marker { display: none; }
+
+        .notifications ul {
+            position: absolute;
+            right: 0;
+            top: 28px;
+            z-index: 10;
+            min-width: 260px;
+            margin: 0;
+            padding: 8px 0;
+            list-style: none;
+            background: #fdf6ee;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .notifications li a {
+            display: block;
+            margin: 0;
+            padding: 8px 16px;
+            color: #4b3832;
+        }
+
+        .notifications li a:hover { background: #e8c39e; color: #4b3832; }
+
+        .notifications .empty { padding: 8px 16px; color: #4b3832; }
+
         main {
             flex: 1;
             max-width: 800px;
@@ -111,6 +151,24 @@
             @endcan
 
             @auth
+                @unless (auth()->user()->isModerator())
+                    @php $unread = auth()->user()->unreadNotifications; @endphp
+                    <details class="notifications">
+                        <summary>🔔 Уведомления ({{ $unread->count() }})</summary>
+                        <ul>
+                            @forelse ($unread as $notification)
+                                <li>
+                                    <a href="{{ route('articles.show', ['article' => $notification->data['id'], 'notification' => $notification->id]) }}">
+                                        {{ $notification->data['title'] }}
+                                    </a>
+                                </li>
+                            @empty
+                                <li class="empty">Нет новых уведомлений</li>
+                            @endforelse
+                        </ul>
+                    </details>
+                @endunless
+
                 <form action="{{ route('logout') }}" method="POST" style="display:inline">
                     @csrf
                     <button type="submit" style="background:none;border:none;color:#fdf6ee;cursor:pointer;font-family:inherit;font-size:16px;margin-left:25px;padding:0">

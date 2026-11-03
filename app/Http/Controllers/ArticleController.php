@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Jobs\VeryLongJob;
 use App\Events\NewArticleEvent;
+use App\Models\User;
+use App\Notifications\NewArticleNotification;
+use Illuminate\Support\Facades\Notification;
 
 class ArticleController extends Controller
 {
@@ -43,16 +46,30 @@ class ArticleController extends Controller
         VeryLongJob::dispatch($article);
         NewArticleEvent::dispatch($article);
 
+        $readers = User::whereHas('role', fn ($q) => $q->where('name', 'reader'))
+            ->where('id', '!=', $request->user()->id)
+            ->get();
+
+        Notification::send($readers, new NewArticleNotification($article));
+
         return redirect()->route('articles.index')->with('success', 'Статья создана');
     }
 
     // GET /articles/{article} — просмотр одной
-    public function show(Article $article)
-    {
-        $article->load(['comments' => fn ($q) => $q->where('is_approved', true)]);
-
-        return view('articles.show', ['article' => $article]);
+    public function show(Request $request, Article $article)
+{
+    if ($request->user() && $request->query('notification')) {
+        $request->user()
+            ->unreadNotifications()
+            ->where('id', $request->query('notification'))
+            ->first()
+            ?->markAsRead();
     }
+
+    $article->load(['comments' => fn ($q) => $q->where('is_approved', true)]);
+
+    return view('articles.show', ['article' => $article]);
+}
 
     // GET /articles/{article}/edit — форма редактирования
     public function edit(Article $article)
