@@ -5,6 +5,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
+use App\Http\Middleware\LogArticleView;
 
 // Только для авторизованных
 Route::middleware('auth:sanctum')->group(function () {
@@ -23,7 +24,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Публично
-Route::resource('articles', ArticleController::class)->only(['index', 'show']);
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{article}', [ArticleController::class, 'show'])
+    ->name('articles.show')
+    ->middleware(LogArticleView::class);
 
 Route::get('/', [MainController::class, 'index'])->name('home');
 Route::get('/galery/{id}', [MainController::class, 'galery'])->name('galery');
