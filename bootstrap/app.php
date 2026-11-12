@@ -23,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return null;
+            }
+
             return response()->view('errors.403', [
                 'message' => $e->getMessage() ?: 'У вас нет прав для этого действия.',
             ], 403);
